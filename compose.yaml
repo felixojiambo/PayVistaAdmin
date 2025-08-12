@@ -1,0 +1,72 @@
+services:
+  # Laravel Backend Service
+  app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: t2g-laravel-app
+    working_dir: /var/www
+    volumes:
+      - ./backend:/var/www
+    ports:
+      - "8000:8000"
+    networks:
+      - t2g_network
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - APP_URL=http://localhost:8000
+      - FRONTEND_URL=http://localhost:3000
+
+  # MySQL Database Service
+
+  db:
+    image: mysql:8.0
+    container_name: t2g-mysql-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      # These are the only two lines needed now
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - t2g-db-data:/var/lib/mysql
+    networks:
+      - t2g_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Next.js Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: t2g-nextjs-frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - t2g_network
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000/api
+
+volumes:
+  t2g-db-data:
+
+networks:
+  t2g_network:
+    driver: bridge
