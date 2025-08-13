@@ -113,11 +113,17 @@ export default function AdminPanel() {
                 <td className="py-4 px-6 font-medium">{s.name}</td>
                 <td className="py-4 px-6">{s.email}</td>
                 <td className="py-4 px-6">
-                   <div className="flex items-center space-x-2">
-                     <input type="number" value={s.salary_in_local_currency} 
-                            onChange={(e) => handleInputChange(s.id, 'salary_in_local_currency', e.target.value)}
-                            className="w-full p-2 border border-gray-300 rounded-md"/>
-                     <span className="font-semibold text-gray-500">{s.currency}</span>
+                   {/* --- THIS IS THE IMPROVED UI --- */}
+                   <div className="flex relative">
+                     <input 
+                        type="number" 
+                        value={s.salary_in_local_currency} 
+                        onChange={(e) => handleInputChange(s.id, 'salary_in_local_currency', e.target.value)}
+                        className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 pr-14"
+                     />
+                     <span className="absolute inset-y-0 right-0 flex items-center pr-3 font-semibold text-gray-500 pointer-events-none">
+                       {s.currency}
+                     </span>
                    </div>
                 </td>
                 <td className="py-4 px-6">
