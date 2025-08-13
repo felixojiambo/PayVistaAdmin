@@ -61,7 +61,7 @@ export default function UserForm() {
           </div>
 
           {/* New Currency Dropdown */}
-          //I have hardcoded currencies for showing, in production I will use api 
+       {/* Currency Selection (hardcoded for now; will use API in production) */}
           <div>
             <label htmlFor="currency" className="block text-sm font-medium text-gray-700">Currency</label>
             <select id="currency" value={currency} onChange={(e) => setCurrency(e.target.value)} required className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
