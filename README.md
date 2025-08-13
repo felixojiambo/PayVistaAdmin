@@ -1,4 +1,4 @@
-# Talents2Germany - Full-Stack Coding Challenge
+# PayVistaAdmin
 
 This project is a full-stack application with a Laravel backend and a Next.js frontend, containerized with Docker. It allows users to submit their salary details and provides an admin panel to view and manage these details.
 
@@ -27,8 +27,8 @@ This project is a full-stack application with a Laravel backend and a Next.js fr
 
 1.  **Clone the repository:**
     ```bash
-    git clone <your-repo-url>
-    cd talents2germany-test
+    git clone https://github.com/felixojiambo/PayVistaAdmin
+    cd PayVistaAdmin
     ```
 
 2.  **Create an environment file:**
