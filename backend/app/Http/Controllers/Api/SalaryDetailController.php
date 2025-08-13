@@ -27,6 +27,7 @@ class SalaryDetailController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'salary_in_local_currency' => 'required|numeric|min:0',
+            'currency' => 'required|string|max:3', // Validate the new currency field
         ]);
 
         if ($validator->fails()) {
@@ -39,6 +40,7 @@ class SalaryDetailController extends Controller
             [                           // Data to update or create with
                 'name' => $request->name,
                 'salary_in_local_currency' => $request->salary_in_local_currency,
+                'currency' => $request->currency, // Save the new currency field
             ]
         );
 

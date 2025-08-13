@@ -19,6 +19,7 @@ class SalaryDetail extends Model
         'name',
         'email',
         'salary_in_local_currency',
+        'currency',
         'salary_in_euros',
         'commission',
     ];
