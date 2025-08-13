@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 
-// Define the type for our salary detail object
+// Define the type for our salary detail object to match the backend
 type SalaryDetail = {
   id: number;
   name: string;
@@ -17,11 +17,14 @@ export default function AdminPanel() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch all salary records when the component mounts
   useEffect(() => {
     const fetchSalaries = async () => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/salaries`);
-        if (!response.ok) throw new Error('Failed to fetch data');
+        if (!response.ok) {
+          throw new Error('Failed to fetch salary data. Is the backend running?');
+        }
         const data = await response.json();
         setSalaries(data);
       } catch (err: any) {
@@ -33,10 +36,11 @@ export default function AdminPanel() {
     fetchSalaries();
   }, []);
   
-  // Handler to update a field
+  // Handler to update a specific field for a record
   const handleUpdate = async (id: number, field: string, value: string) => {
-    // Optimistically update UI
     const originalSalaries = [...salaries];
+    
+    // Optimistically update the UI for a better user experience
     setSalaries(salaries.map(s => s.id === id ? { ...s, [field]: value } : s));
 
     try {
@@ -45,58 +49,60 @@ export default function AdminPanel() {
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ [field]: value }),
       });
-      if (!response.ok) throw new Error('Update failed');
-      // Re-fetch or update with response data for accuracy
+
+      if (!response.ok) throw new Error('Update failed on the server.');
+      
+      // Update the state with the final record from the server to ensure consistency
       const updatedRecord = await response.json();
       setSalaries(salaries.map(s => s.id === id ? updatedRecord : s));
 
     } catch (error) {
         console.error("Failed to update:", error);
-        // Revert on failure
+        // If the update fails, revert the UI to its original state
         setSalaries(originalSalaries);
-        alert('Failed to save changes. Please try again.');
+        alert('Failed to save changes. Please check the console and try again.');
     }
   };
 
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (loading) return <p className="text-center p-8">Loading dashboard...</p>;
+  if (error) return <p className="text-center p-8 text-red-600">Error: {error}</p>;
 
   return (
-    <main className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Admin Salary Dashboard</h1>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white">
-          {/* Table headers */}
-          <thead>
+    <main className="p-4 sm:p-8 bg-gray-50 min-h-screen font-sans">
+      <h1 className="text-3xl font-bold mb-6 text-gray-800">Admin Salary Dashboard</h1>
+      <div className="overflow-x-auto bg-white rounded-lg shadow">
+        <table className="min-w-full text-sm text-left text-gray-700">
+          <thead className="bg-gray-100 text-xs text-gray-700 uppercase">
             <tr>
-              <th className="py-2 px-4 border-b">Name</th>
-              <th className="py-2 px-4 border-b">Email</th>
-              <th className="py-2 px-4 border-b">Salary (Local)</th>
-              <th className="py-2 px-4 border-b">Salary (EUR)</th>
-              <th className="py-2 px-4 border-b">Commission (EUR)</th>
-              <th className="py-2 px-4 border-b">Displayed Salary (EUR)</th>
+              <th className="py-3 px-6">Name</th>
+              <th className="py-3 px-6">Email</th>
+              <th className="py-3 px-6">Salary (Local)</th>
+              <th className="py-3 px-6">Salary (EUR)</th>
+              <th className="py-3 px-6">Commission (EUR)</th>
+              <th className="py-3 px-6">Displayed Salary (EUR)</th>
             </tr>
           </thead>
           <tbody>
             {salaries.map((s) => (
-              <tr key={s.id}>
-                <td className="py-2 px-4 border-b">{s.name}</td>
-                <td className="py-2 px-4 border-b">{s.email}</td>
-                {/* Editable Fields */}
-                <td className="py-2 px-4 border-b">
-                   <input type="number" defaultValue={s.salary_in_local_currency} onBlur={(e) => handleUpdate(s.id, 'salary_in_local_currency', e.target.value)}
-                           className="w-full p-1 border rounded"/>
+              <tr key={s.id} className="border-b hover:bg-gray-50">
+                <td className="py-4 px-6 font-medium">{s.name}</td>
+                <td className="py-4 px-6">{s.email}</td>
+                <td className="py-4 px-6">
+                   <input type="number" defaultValue={s.salary_in_local_currency} 
+                          onBlur={(e) => handleUpdate(s.id, 'salary_in_local_currency', e.target.value)}
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"/>
                 </td>
-                <td className="py-2 px-4 border-b">
-                    <input type="number" defaultValue={s.salary_in_euros ?? ''} onBlur={(e) => handleUpdate(s.id, 'salary_in_euros', e.target.value)}
-                           className="w-full p-1 border rounded"/>
+                <td className="py-4 px-6">
+                    <input type="number" defaultValue={s.salary_in_euros ?? ''} 
+                           onBlur={(e) => handleUpdate(s.id, 'salary_in_euros', e.target.value)}
+                           className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"/>
                 </td>
-                <td className="py-2 px-4 border-b">
-                    <input type="number" defaultValue={s.commission} onBlur={(e) => handleUpdate(s.id, 'commission', e.target.value)}
-                           className="w-full p-1 border rounded"/>
+                <td className="py-4 px-6">
+                    <input type="number" defaultValue={s.commission} 
+                           onBlur={(e) => handleUpdate(s.id, 'commission', e.target.value)}
+                           className="w-full p-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"/>
                 </td>
-                 <td className="py-2 px-4 border-b font-semibold">{s.displayed_salary.toFixed(2)} €</td>
+                 <td className="py-4 px-6 font-semibold text-gray-900">{s.displayed_salary.toFixed(2)} €</td>
               </tr>
             ))}
           </tbody>
