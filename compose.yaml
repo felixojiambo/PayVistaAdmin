@@ -37,6 +37,7 @@ services:
       #needed
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      
     volumes:
       - t2g-db-data:/var/lib/mysql
     networks:
