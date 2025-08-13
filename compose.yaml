@@ -34,7 +34,7 @@ services:
     ports:
       - "3306:3306"
     environment:
-      # These are the only two lines needed now
+      #needed
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
